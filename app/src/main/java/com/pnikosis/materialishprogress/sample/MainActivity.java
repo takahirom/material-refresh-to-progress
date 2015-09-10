@@ -53,12 +53,19 @@ public class MainActivity extends ActionBarActivity {
         });
 
         progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
-        progressWheel.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.button_start).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 progressWheel.spin();
             }
         });
+        findViewById(R.id.button_end).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressWheel.stopSpin();
+            }
+        });
+
         progressWheelInterpolated = (ProgressWheel) findViewById(R.id.interpolated);
         progressWheelLinear = (ProgressWheel) findViewById(R.id.linear);
 

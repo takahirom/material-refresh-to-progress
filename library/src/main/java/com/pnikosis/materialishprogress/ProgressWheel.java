@@ -4,13 +4,10 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
-import android.graphics.Point;
 import android.graphics.RectF;
-import android.opengl.Matrix;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -25,7 +22,7 @@ import android.view.View;
  * A Material style progress wheel, compatible up to 2.2.
  * Todd Davies' Progress Wheel https://github.com/Todd-Davies/ProgressWheel
  *
- * @author Nico Hormazábal
+ * @author Nico Hormazábal, takahirom
  *         <p/>
  *         Licensed under the Apache License 2.0 license see:
  *         http://www.apache.org/licenses/LICENSE-2.0
@@ -77,7 +74,11 @@ public class ProgressWheel extends View {
     private ProgressCallback callback;
 
     private boolean shouldAnimate;
-    private boolean isShowArrow = true;
+    private boolean isStartingArrow = true;
+    public static final Path ARROW_PATH = new Path();
+    private Paint arrowPaint;
+    private boolean isFinishingArrow = false;
+    private boolean isPostFinishingArrow = false;
 
     /**
      * The constructor for the ProgressWheel
@@ -188,6 +189,9 @@ public class ProgressWheel extends View {
         rimPaint.setAntiAlias(true);
         rimPaint.setStyle(Style.STROKE);
         rimPaint.setStrokeWidth(rimWidth);
+
+
+        arrowPaint = new Paint();
     }
 
     /**
@@ -325,40 +329,23 @@ public class ProgressWheel extends View {
         }
 
 
-        if (!barGrowingFromFront && isShowArrow) {
-            int i = (int) (barWidth * 2 * (1 - (barMaxLength - barExtraLength) / barMaxLength));
+        if(barGrowingFromFront && isPostFinishingArrow) {
+            isFinishingArrow = true;
+            isPostFinishingArrow = false;
+        }
 
-            int x = (int) (Math.cos(Math.toRadians(from + length)) * circleBounds.width() / 2 + circleBounds.centerX());
-            int y = (int) (Math.sin(Math.toRadians(from + length)) * circleBounds.height() / 2 + circleBounds.centerY());
-
-            int aX = (int) (Math.cos(Math.toRadians(from + length)) * (circleBounds.width() / 2 - barWidth - i) + circleBounds.centerX());
-            int aY = (int) (Math.sin(Math.toRadians(from + length)) * (circleBounds.height() / 2 - barWidth - i) + circleBounds.centerY());
-            Point a = new Point(aX, aY);
-            int bX = (int) (Math.cos(Math.toRadians(from + length)) * (circleBounds.width() / 2 + barWidth + i) + circleBounds.centerX());
-            int bY = (int) (Math.sin(Math.toRadians(from + length)) * (circleBounds.height() / 2 + barWidth + i) + circleBounds.centerY());
-            Point b = new Point(bX, bY);
-
-            int cX = (int) (-Math.sin(Math.toRadians(from + length)) * i * 2);
-            int cY = (int) (Math.cos(Math.toRadians(from + length)) * i * 2);
-
-            // TODO: Bring creation instance to constructor point and path and paint
-            Point c = new Point(x + cX, y + cY);
-
-            Path path = new Path();
-            path.setFillType(Path.FillType.EVEN_ODD);
-            path.moveTo(a.x, a.y);
-            path.lineTo(a.x, a.y);
-            path.lineTo(b.x, b.y);
-            path.lineTo(c.x, c.y);
-            path.close();
-
-            Paint paint = new Paint();
-            paint.setAntiAlias(true);
-            paint.setColor(barColor);
-
-            canvas.drawPath(path, paint);
+        boolean startSpinning = !barGrowingFromFront && isStartingArrow;
+        boolean endSpinning = barGrowingFromFront && isFinishingArrow;
+        if (!(isStartingArrow && isPostFinishingArrow) && (startSpinning || endSpinning)) {
+            drawArrow(canvas, from, length);
         } else {
-            isShowArrow = false;
+            isStartingArrow = false;
+            if (isFinishingArrow) {
+                drawArrow(canvas, from, length);
+                isFinishingArrow = false;
+                isSpinning = false;
+                mustInvalidate = false;
+            }
         }
 
 
@@ -368,6 +355,38 @@ public class ProgressWheel extends View {
         if (mustInvalidate) {
             invalidate();
         }
+    }
+
+    private void drawArrow(Canvas canvas, float from, float length) {
+        int i = (int) (barWidth * 2 * (1 - (barMaxLength - barExtraLength) / barMaxLength));
+
+        double sin = Math.sin(Math.toRadians(from + length));
+        double cos = Math.cos(Math.toRadians(from + length));
+
+        float circleRadius = circleBounds.width() / 2;
+        int x = (int) (cos * circleRadius + circleBounds.centerX());
+        int y = (int) (sin * circleRadius + circleBounds.centerY());
+
+        int aX = (int) (cos * (circleRadius - barWidth - i) + circleBounds.centerX());
+        int aY = (int) (sin * (circleRadius - barWidth - i) + circleBounds.centerY());
+        int bX = (int) (cos * (circleRadius + barWidth + i) + circleBounds.centerX());
+        int bY = (int) (sin * (circleRadius + barWidth + i) + circleBounds.centerY());
+
+        int cX = (int) (-sin * i * 2);
+        int cY = (int) (cos * i * 2);
+
+        ARROW_PATH.rewind();
+        ARROW_PATH.setFillType(Path.FillType.EVEN_ODD);
+        ARROW_PATH.moveTo(aX, aY);
+        ARROW_PATH.lineTo(aX, aY);
+        ARROW_PATH.lineTo(bX, bY);
+        ARROW_PATH.lineTo(x + cX, y + cY);
+        ARROW_PATH.close();
+
+        arrowPaint.setAntiAlias(true);
+        arrowPaint.setColor(barColor);
+
+        canvas.drawPath(ARROW_PATH, arrowPaint);
     }
 
     @Override
@@ -441,7 +460,18 @@ public class ProgressWheel extends View {
      */
     public void spin() {
         lastTimeAnimated = SystemClock.uptimeMillis();
-        isSpinning = true;
+        if (!isSpinning) {
+            isSpinning = true;
+            isStartingArrow = true;
+        }
+        invalidate();
+    }
+
+    public void stopSpin() {
+        if (isSpinning) {
+            isFinishingArrow = false;
+            isPostFinishingArrow = true;
+        }
         invalidate();
     }
 
