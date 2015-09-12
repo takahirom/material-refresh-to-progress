@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
@@ -17,6 +18,9 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Interpolator;
 
 /**
  * A Material style progress wheel, compatible up to 2.2.
@@ -192,6 +196,8 @@ public class ProgressWheel extends View {
 
 
         arrowPaint = new Paint();
+        arrowPaint.setAntiAlias(true);
+        arrowPaint.setColor(barColor);
     }
 
     /**
@@ -299,7 +305,7 @@ public class ProgressWheel extends View {
             //Draw the spinning bar
             mustInvalidate = true;
         }
-        long deltaTime = (SystemClock.uptimeMillis() - lastTimeAnimated);
+        long deltaTime = (SystemClock.uptimeMillis() - lastTimeAnimated)/5;
         float deltaNormalized = deltaTime * spinSpeed / 1000.0f;
         if (!isSpinning) {
             pausedTimeWithoutGrowing = pauseGrowingTime;
@@ -334,6 +340,8 @@ public class ProgressWheel extends View {
             isPostFinishingArrow = false;
         }
 
+        canvas.drawArc(circleBounds, from, length, false, barPaint);
+
         boolean startSpinning = !barGrowingFromFront && isStartingArrow;
         boolean endSpinning = barGrowingFromFront && isFinishingArrow;
         if (!(isStartingArrow && isPostFinishingArrow) && (startSpinning || endSpinning)) {
@@ -349,7 +357,6 @@ public class ProgressWheel extends View {
         }
 
 
-        canvas.drawArc(circleBounds, from, length, false, barPaint);
 
 
         if (mustInvalidate) {
@@ -358,35 +365,68 @@ public class ProgressWheel extends View {
     }
 
     private void drawArrow(Canvas canvas, float from, float length) {
-        int i = (int) (barWidth * 2 * (1 - (barMaxLength - barExtraLength) / barMaxLength));
+        float progress = (barMaxLength - length) / (barMaxLength - barLength);
+        System.out.println(progress);
 
-        double sin = Math.sin(Math.toRadians(from + length));
-        double cos = Math.cos(Math.toRadians(from + length));
+        double sin = Math.sin(Math.toRadians(from + length + 5 - 5 * progress));
+        double cos = Math.cos(Math.toRadians(from + length + 5 - 5 * progress));
+
+        double sin_45 = Math.sin(Math.toRadians(from + length + 5 + 45 - 5 * progress));
+        double sin_minus_45 = Math.sin(Math.toRadians(from + length - (5 + 45 - 5 * progress)));
+
+        double cos_45 = Math.sin(Math.toRadians(from + length + (5 + 45)));
+        double cos_minus_45 = Math.cos(Math.toRadians(from + length - (5 + 45)));
+
+
+        float arrowLength = (50) * (1 - progress);
+        int inX = (int) ((sin_minus_45 * 50) * (1 - progress) + (sin * arrowLength) * progress);
+        int inY = (int) ((-sin_45 * 50) * (1 - progress) + ((-cos * arrowLength) * progress));
 
         float circleRadius = circleBounds.width() / 2;
-        int x = (int) (cos * circleRadius + circleBounds.centerX());
-        int y = (int) (sin * circleRadius + circleBounds.centerY());
+//        int outBaseX = (int) (cos * (circleRadius - barWidth / 2) + circleBounds.centerX());
+//        int outBaseY = (int) (sin * (circleRadius - barWidth / 2) + circleBounds.centerY());
+//        int inBaseX = (int) (cos * (circleRadius ) + circleBounds.centerX());
+//        int inBaseY = (int) (sin * (circleRadius ) + circleBounds.centerY());
 
-        int aX = (int) (cos * (circleRadius - barWidth - i) + circleBounds.centerX());
-        int aY = (int) (sin * (circleRadius - barWidth - i) + circleBounds.centerY());
-        int bX = (int) (cos * (circleRadius + barWidth + i) + circleBounds.centerX());
-        int bY = (int) (sin * (circleRadius + barWidth + i) + circleBounds.centerY());
+        int inBaseX = (int) (cos * (circleRadius + barWidth / 4) + circleBounds.centerX());
+        int inBaseY = (int) (sin * (circleRadius + barWidth / 4) + circleBounds.centerY());
 
-        int cX = (int) (-sin * i * 2);
-        int cY = (int) (cos * i * 2);
+        Interpolator accelerateInterpolator = new AccelerateDecelerateInterpolator();
+        double rotateSin = Math.sin(Math.toRadians(from + length + 5 - 5 * progress + 45 + progress * 115));
+        double rotateSinMinus = Math.sin(Math.toRadians(from + length - (5 - 5 * progress + 45) + progress * 115));
+        double advancedSin = Math.sin(Math.toRadians(from + length + 5 - 5 * progress - progress * barWidth));
+        double advancedCos = Math.cos(Math.toRadians(from + length + 5 - 5 * progress - progress * barWidth));
 
-        ARROW_PATH.rewind();
-        ARROW_PATH.setFillType(Path.FillType.EVEN_ODD);
-        ARROW_PATH.moveTo(aX, aY);
-        ARROW_PATH.lineTo(aX, aY);
-        ARROW_PATH.lineTo(bX, bY);
-        ARROW_PATH.lineTo(x + cX, y + cY);
-        ARROW_PATH.close();
+        int outX = (int) (rotateSin * arrowLength);
+        int outY = (int) ((rotateSinMinus * arrowLength));
+        int outBaseX;
+        int outBaseY;
+        if (progress<0.5f) {
+            outBaseX = (int) (advancedCos * (circleRadius + 50 * progress - barWidth / 4) + circleBounds.centerX());
+            outBaseY = (int) (advancedSin * (circleRadius + 50 * progress - barWidth / 4) + circleBounds.centerY());
+        }else {
+            outBaseX = (int) (advancedCos * (circleRadius + 50 * (1 - progress)  - barWidth / 4) + circleBounds.centerX());
+            outBaseY = (int) (advancedSin * (circleRadius + 50 * (1 - progress)  - barWidth / 4) + circleBounds.centerY());
+        }
+
+//        ARROW_PATH.rewind();
+//        ARROW_PATH.setFillType(Path.FillType.EVEN_ODD);
+//        ARROW_PATH.moveTo(outX, outY);
+//        ARROW_PATH.lineTo(outX, outY);
+//        ARROW_PATH.lineTo(inX, inY);
+//        ARROW_PATH.lineTo(outBaseX + cX, outBaseY + cY);
+//        ARROW_PATH.close();
+//        canvas.drawPath(ARROW_PATH, arrowPaint);
+
 
         arrowPaint.setAntiAlias(true);
-        arrowPaint.setColor(barColor);
-
-        canvas.drawPath(ARROW_PATH, arrowPaint);
+        arrowPaint.setStyle(Style.STROKE);
+        arrowPaint.setStrokeWidth(barWidth);
+        Paint paint = new Paint(arrowPaint);
+//        paint.setColor(Color.YELLOW);
+        canvas.drawLine(inBaseX, inBaseY, inBaseX + inX, inBaseY + inY, paint);
+//        paint.setColor(Color.RED);
+        canvas.drawLine(outBaseX, outBaseY, outBaseX + outX, outBaseY + outY, paint);
     }
 
     @Override
