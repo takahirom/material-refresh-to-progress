@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
@@ -19,7 +18,6 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 
 /**
@@ -345,11 +343,11 @@ public class ProgressWheel extends View {
         boolean startSpinning = !barGrowingFromFront && isStartingArrow;
         boolean endSpinning = barGrowingFromFront && isFinishingArrow;
         if (!(isStartingArrow && isPostFinishingArrow) && (startSpinning || endSpinning)) {
-            drawArrow(canvas, from, length);
+            drawLineArrow(canvas, from, length);
         } else {
             isStartingArrow = false;
             if (isFinishingArrow) {
-                drawArrow(canvas, from, length);
+                drawLineArrow(canvas, from, length);
                 isFinishingArrow = false;
                 isSpinning = false;
                 mustInvalidate = false;
@@ -364,7 +362,7 @@ public class ProgressWheel extends View {
         }
     }
 
-    private void drawArrow(Canvas canvas, float from, float length) {
+    private void drawLineArrow(Canvas canvas, float from, float length) {
         float progress = (barMaxLength - length) / (barMaxLength - barLength);
         System.out.println(progress);
 
@@ -427,6 +425,38 @@ public class ProgressWheel extends View {
         canvas.drawLine(inBaseX, inBaseY, inBaseX + inX, inBaseY + inY, paint);
 //        paint.setColor(Color.RED);
         canvas.drawLine(outBaseX, outBaseY, outBaseX + outX, outBaseY + outY, paint);
+    }
+
+    private void drawArrow(Canvas canvas, float from, float length) {
+        int i = (int) (barWidth * 2 * (1 - (barMaxLength - barExtraLength) / barMaxLength));
+
+        double sin = Math.sin(Math.toRadians(from + length));
+        double cos = Math.cos(Math.toRadians(from + length));
+
+        float circleRadius = circleBounds.width() / 2;
+        int x = (int) (cos * circleRadius + circleBounds.centerX());
+        int y = (int) (sin * circleRadius + circleBounds.centerY());
+
+        int aX = (int) (cos * (circleRadius - barWidth - i) + circleBounds.centerX());
+        int aY = (int) (sin * (circleRadius - barWidth - i) + circleBounds.centerY());
+        int bX = (int) (cos * (circleRadius + barWidth + i) + circleBounds.centerX());
+        int bY = (int) (sin * (circleRadius + barWidth + i) + circleBounds.centerY());
+
+        int cX = (int) (-sin * i * 2);
+        int cY = (int) (cos * i * 2);
+
+        ARROW_PATH.rewind();
+        ARROW_PATH.setFillType(Path.FillType.EVEN_ODD);
+        ARROW_PATH.moveTo(aX, aY);
+        ARROW_PATH.lineTo(aX, aY);
+        ARROW_PATH.lineTo(bX, bY);
+        ARROW_PATH.lineTo(x + cX, y + cY);
+        ARROW_PATH.close();
+
+        arrowPaint.setAntiAlias(true);
+        arrowPaint.setColor(barColor);
+
+        canvas.drawPath(ARROW_PATH, arrowPaint);
     }
 
     @Override
