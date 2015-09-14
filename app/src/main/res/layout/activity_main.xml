@@ -86,11 +86,21 @@
             android:layout_centerHorizontal="true"
             wheel:matProg_barColor="#5588FF"
              />
+         <com.pnikosis.materialishprogress.ProgressWheel
+             android:id="@+id/progress_wheel2"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_below="@id/progress_wheel"
+            android:layout_centerHorizontal="true"
+            wheel:matProg_barColor="#5588FF"
+             wheel:matProg_lineArrow="true"
+             />
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/progress_wheel"
+            android:layout_below="@+id/progress_wheel2"
             android:layout_centerHorizontal="true"
             android:orientation="vertical">
 

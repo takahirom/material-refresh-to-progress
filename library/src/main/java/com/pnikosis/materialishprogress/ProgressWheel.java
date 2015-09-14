@@ -81,6 +81,7 @@ public class ProgressWheel extends View {
     private Paint arrowPaint;
     private boolean isFinishingArrow = false;
     private boolean isPostFinishingArrow = false;
+    private boolean isLineArrow;
 
     /**
      * The constructor for the ProgressWheel
@@ -262,6 +263,8 @@ public class ProgressWheel extends View {
 
         linearProgress = a.getBoolean(R.styleable.ProgressWheel_matProg_linearProgress, false);
 
+        isLineArrow = a.getBoolean(R.styleable.ProgressWheel_matProg_lineArrow, false);
+
         if (a.getBoolean(R.styleable.ProgressWheel_matProg_progressIndeterminate, false)) {
             spin();
         }
@@ -343,11 +346,20 @@ public class ProgressWheel extends View {
         boolean startSpinning = !barGrowingFromFront && isStartingArrow;
         boolean endSpinning = barGrowingFromFront && isFinishingArrow;
         if (!(isStartingArrow && isPostFinishingArrow) && (startSpinning || endSpinning)) {
-            drawLineArrow(canvas, from, length);
+            if (isLineArrow) {
+                drawLineArrow(canvas, from, length);
+            }else {
+                drawArrow(canvas, from, length);
+            }
         } else {
             isStartingArrow = false;
             if (isFinishingArrow) {
-                drawLineArrow(canvas, from, length);
+                if (isLineArrow) {
+                    drawLineArrow(canvas, from, length);
+                } else {
+
+                    drawArrow(canvas, from, length);
+                }
                 isFinishingArrow = false;
                 isSpinning = false;
                 mustInvalidate = false;

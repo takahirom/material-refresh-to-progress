@@ -28,6 +28,7 @@ public class MainActivity extends ActionBarActivity {
 
     private TextView interpolatedValue;
     private TextView linearValue;
+    private ProgressWheel progressWheel2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,16 +54,19 @@ public class MainActivity extends ActionBarActivity {
         });
 
         progressWheel = (ProgressWheel) findViewById(R.id.progress_wheel);
+        progressWheel2 = (ProgressWheel) findViewById(R.id.progress_wheel2);
         findViewById(R.id.button_start).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 progressWheel.spin();
+                progressWheel2.spin();
             }
         });
         findViewById(R.id.button_end).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 progressWheel.stopSpin();
+                progressWheel2.stopSpin();
             }
         });
 
