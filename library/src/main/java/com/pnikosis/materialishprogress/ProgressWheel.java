@@ -306,7 +306,7 @@ public class ProgressWheel extends View {
             //Draw the spinning bar
             mustInvalidate = true;
         }
-        long deltaTime = (SystemClock.uptimeMillis() - lastTimeAnimated)/2;
+        long deltaTime = (SystemClock.uptimeMillis() - lastTimeAnimated) / 2;
         float deltaNormalized = deltaTime * spinSpeed / 1000.0f;
         if (!isSpinning) {
             pausedTimeWithoutGrowing = pauseGrowingTime;
@@ -401,7 +401,6 @@ public class ProgressWheel extends View {
         int inBaseX = (int) (cos * (circleRadius + barWidth / 4) + circleBounds.centerX());
         int inBaseY = (int) (sin * (circleRadius + barWidth / 4) + circleBounds.centerY());
 
-        Interpolator accelerateInterpolator = new AccelerateDecelerateInterpolator();
         double rotateSin = Math.sin(Math.toRadians(from + length + 5 - 5 * progress + 45 + progress * 115));
         double rotateSinMinus = Math.sin(Math.toRadians(from + length - (5 - 5 * progress + 45) + progress * 115));
         double advancedSin = Math.sin(Math.toRadians(from + length + 5 - 5 * progress - progress * barWidth));
