@@ -335,38 +335,35 @@ public class ProgressWheel extends View {
             length = 135;
         }
 
+        canvas.drawArc(circleBounds, from, length, false, barPaint);
 
         if(barGrowingFromFront && isPostFinishingArrow) {
             isFinishingArrow = true;
             isPostFinishingArrow = false;
         }
 
-        canvas.drawArc(circleBounds, from, length, false, barPaint);
+        boolean isLastDrawArrow = false;
+        if (barGrowingFromFront){
+            isStartingArrow = false;
+        }
+        if (isFinishingArrow && !barGrowingFromFront) {
+            isStartingArrow = false;
+            isFinishingArrow = false;
+            isSpinning = false;
+            mustInvalidate = false;
+            isLastDrawArrow = true;
+        }
 
         boolean startSpinning = !barGrowingFromFront && isStartingArrow;
         boolean endSpinning = barGrowingFromFront && isFinishingArrow;
-        if (!(isStartingArrow && isPostFinishingArrow) && (startSpinning || endSpinning)) {
+        boolean isShowArrow = startSpinning || endSpinning || isLastDrawArrow;
+        if (isShowArrow) {
             if (isLineArrow) {
                 drawLineArrow(canvas, from, length);
-            }else {
+            } else {
                 drawArrow(canvas, from, length);
             }
-        } else {
-            isStartingArrow = false;
-            if (isFinishingArrow) {
-                if (isLineArrow) {
-                    drawLineArrow(canvas, from, length);
-                } else {
-
-                    drawArrow(canvas, from, length);
-                }
-                isFinishingArrow = false;
-                isSpinning = false;
-                mustInvalidate = false;
-            }
         }
-
-
 
 
         if (mustInvalidate) {
