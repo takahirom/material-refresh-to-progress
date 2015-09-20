@@ -17,8 +17,6 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Interpolator;
 
 /**
  * A Material style progress wheel, compatible up to 2.2.
@@ -30,6 +28,7 @@ import android.view.animation.Interpolator;
  *         http://www.apache.org/licenses/LICENSE-2.0
  */
 public class ProgressWheel extends View {
+    public static final Path ARROW_PATH = new Path();
     private static final String TAG = ProgressWheel.class.getSimpleName();
     private final int barLength = 16;
     private final int barMaxLength = 270;
@@ -52,32 +51,24 @@ public class ProgressWheel extends View {
     //Colors (with defaults)
     private int barColor = 0xAA000000;
     private int rimColor = 0x00FFFFFF;
-
     //Paints
     private Paint barPaint = new Paint();
     private Paint rimPaint = new Paint();
-
     //Rectangles
     private RectF circleBounds = new RectF();
-
     //Animation
     //The amount of degrees per second
     private float spinSpeed = 230.0f;
     //private float spinSpeed = 120.0f;
     // The last time the spinner was animated
     private long lastTimeAnimated = 0;
-
     private boolean linearProgress;
-
     private float mProgress = 0.0f;
     private float mTargetProgress = 0.0f;
     private boolean isSpinning = false;
-
     private ProgressCallback callback;
-
     private boolean shouldAnimate;
     private boolean isStartingArrow = true;
-    public static final Path ARROW_PATH = new Path();
     private Paint arrowPaint;
     private boolean isFinishingArrow = false;
     private boolean isPostFinishingArrow = false;
@@ -381,19 +372,11 @@ public class ProgressWheel extends View {
         double sin_45 = Math.sin(Math.toRadians(from + length + 5 + 40 - 5 * progress));
         double sin_minus_45 = Math.sin(Math.toRadians(from + length - (5 + 40 - 5 * progress)));
 
-        double cos_45 = Math.sin(Math.toRadians(from + length + (5 + 45)));
-        double cos_minus_45 = Math.cos(Math.toRadians(from + length - (5 + 45)));
-
-
         float arrowLength = (50) * (1 - progress);
         int inX = (int) ((sin_minus_45 * 50) * (1 - progress) + (sin * arrowLength) * progress);
         int inY = (int) ((-sin_45 * 50) * (1 - progress) + ((-cos * arrowLength) * progress));
 
         float circleRadius = circleBounds.width() / 2;
-//        int outBaseX = (int) (cos * (circleRadius - barWidth / 2) + circleBounds.centerX());
-//        int outBaseY = (int) (sin * (circleRadius - barWidth / 2) + circleBounds.centerY());
-//        int inBaseX = (int) (cos * (circleRadius ) + circleBounds.centerX());
-//        int inBaseY = (int) (sin * (circleRadius ) + circleBounds.centerY());
 
         int inBaseX = (int) (cos * (circleRadius + barWidth / 4) + circleBounds.centerX());
         int inBaseY = (int) (sin * (circleRadius + barWidth / 4) + circleBounds.centerY());
@@ -414,16 +397,6 @@ public class ProgressWheel extends View {
             outBaseX = (int) (advancedCos * (circleRadius + 50 * (1 - progress)  - barWidth / 4) + circleBounds.centerX());
             outBaseY = (int) (advancedSin * (circleRadius + 50 * (1 - progress)  - barWidth / 4) + circleBounds.centerY());
         }
-
-//        ARROW_PATH.rewind();
-//        ARROW_PATH.setFillType(Path.FillType.EVEN_ODD);
-//        ARROW_PATH.moveTo(outX, outY);
-//        ARROW_PATH.lineTo(outX, outY);
-//        ARROW_PATH.lineTo(inX, inY);
-//        ARROW_PATH.lineTo(outBaseX + cX, outBaseY + cY);
-//        ARROW_PATH.close();
-//        canvas.drawPath(ARROW_PATH, arrowPaint);
-
 
         arrowPaint.setAntiAlias(true);
         arrowPaint.setStyle(Style.STROKE);
@@ -830,7 +803,7 @@ public class ProgressWheel extends View {
          *
          * @param progress a double value between 0.00 and 1.00 both included
          */
-        public void onProgressUpdate(float progress);
+        void onProgressUpdate(float progress);
     }
 
     static class WheelSavedState extends BaseSavedState {
