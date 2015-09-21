@@ -28,7 +28,6 @@ import android.view.View;
  *         http://www.apache.org/licenses/LICENSE-2.0
  */
 public class ProgressWheel extends View {
-    public static final Path ARROW_PATH = new Path();
     private static final String TAG = ProgressWheel.class.getSimpleName();
     private final int barLength = 16;
     private final int barMaxLength = 270;
@@ -68,11 +67,13 @@ public class ProgressWheel extends View {
     private boolean isSpinning = false;
     private ProgressCallback callback;
     private boolean shouldAnimate;
+
     private boolean isStartingArrow = true;
-    private Paint arrowPaint;
     private boolean isFinishingArrow = false;
+    private Paint arrowPaint;
     private boolean isPostFinishingArrow = false;
-    private boolean isLineArrow;
+    private boolean isLineArrow = false;
+    private Path arrowPath = new Path();
 
     /**
      * The constructor for the ProgressWheel
@@ -426,18 +427,18 @@ public class ProgressWheel extends View {
         int cX = (int) (-sin * i * 2);
         int cY = (int) (cos * i * 2);
 
-        ARROW_PATH.rewind();
-        ARROW_PATH.setFillType(Path.FillType.EVEN_ODD);
-        ARROW_PATH.moveTo(aX, aY);
-        ARROW_PATH.lineTo(aX, aY);
-        ARROW_PATH.lineTo(bX, bY);
-        ARROW_PATH.lineTo(x + cX, y + cY);
-        ARROW_PATH.close();
+        arrowPath.rewind();
+        arrowPath.setFillType(Path.FillType.EVEN_ODD);
+        arrowPath.moveTo(aX, aY);
+        arrowPath.lineTo(aX, aY);
+        arrowPath.lineTo(bX, bY);
+        arrowPath.lineTo(x + cX, y + cY);
+        arrowPath.close();
 
         arrowPaint.setAntiAlias(true);
         arrowPaint.setColor(barColor);
 
-        canvas.drawPath(ARROW_PATH, arrowPaint);
+        canvas.drawPath(arrowPath, arrowPaint);
     }
 
     @Override
