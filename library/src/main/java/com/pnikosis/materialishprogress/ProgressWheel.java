@@ -501,11 +501,13 @@ public class ProgressWheel extends View {
      * Turn off spin mode
      */
     public void stopSpinning() {
-        isSpinning = false;
-        mProgress = 0.0f;
-        mTargetProgress = 0.0f;
+        if (isSpinning) {
+            isFinishingArrow = false;
+            isPostFinishingArrow = true;
+        }
         invalidate();
     }
+
 
     /**
      * Puts the view on spin mode
@@ -515,14 +517,6 @@ public class ProgressWheel extends View {
         if (!isSpinning) {
             isSpinning = true;
             isStartingArrow = true;
-        }
-        invalidate();
-    }
-
-    public void stopSpin() {
-        if (isSpinning) {
-            isFinishingArrow = false;
-            isPostFinishingArrow = true;
         }
         invalidate();
     }
