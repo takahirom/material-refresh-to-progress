@@ -370,8 +370,8 @@ public class ProgressWheel extends View {
         double sin = Math.sin(Math.toRadians(fromDegree + lengthDegree + 5 - 5 * progress));
         double cos = Math.cos(Math.toRadians(fromDegree + lengthDegree + 5 - 5 * progress));
 
-        double sin_45 = Math.sin(Math.toRadians(fromDegree + lengthDegree + 5 + 40 - 5 * progress));
-        double sin_minus_45 = Math.sin(Math.toRadians(fromDegree + lengthDegree - (5 + 40 - 5 * progress)));
+        double sin_45 = Math.sin(Math.toRadians(fromDegree + lengthDegree + 45 - 5 * progress));
+        double sin_minus_45 = Math.sin(Math.toRadians(fromDegree + lengthDegree - (45 - 5 * progress)));
 
         float arrowLength = (50) * (1 - progress);
         int inX = (int) ((sin_minus_45 * 50) * (1 - progress) + (sin * arrowLength) * progress);
