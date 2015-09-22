@@ -363,15 +363,15 @@ public class ProgressWheel extends View {
         }
     }
 
-    private void drawLineArrow(Canvas canvas, float from, float length) {
-        float progress = (barMaxLength - length) / (barMaxLength - barLength);
+    private void drawLineArrow(Canvas canvas, float fromDegree, float lengthDegree) {
+        float progress = (barMaxLength - lengthDegree) / (barMaxLength - barLength);
         System.out.println(progress);
 
-        double sin = Math.sin(Math.toRadians(from + length + 5 - 5 * progress));
-        double cos = Math.cos(Math.toRadians(from + length + 5 - 5 * progress));
+        double sin = Math.sin(Math.toRadians(fromDegree + lengthDegree + 5 - 5 * progress));
+        double cos = Math.cos(Math.toRadians(fromDegree + lengthDegree + 5 - 5 * progress));
 
-        double sin_45 = Math.sin(Math.toRadians(from + length + 5 + 40 - 5 * progress));
-        double sin_minus_45 = Math.sin(Math.toRadians(from + length - (5 + 40 - 5 * progress)));
+        double sin_45 = Math.sin(Math.toRadians(fromDegree + lengthDegree + 5 + 40 - 5 * progress));
+        double sin_minus_45 = Math.sin(Math.toRadians(fromDegree + lengthDegree - (5 + 40 - 5 * progress)));
 
         float arrowLength = (50) * (1 - progress);
         int inX = (int) ((sin_minus_45 * 50) * (1 - progress) + (sin * arrowLength) * progress);
@@ -382,10 +382,10 @@ public class ProgressWheel extends View {
         int inBaseX = (int) (cos * (circleRadius + barWidth / 4) + circleBounds.centerX());
         int inBaseY = (int) (sin * (circleRadius + barWidth / 4) + circleBounds.centerY());
 
-        double rotateSin = Math.sin(Math.toRadians(from + length + 5 - 5 * progress + 45 + progress * 115));
-        double rotateSinMinus = Math.sin(Math.toRadians(from + length - (5 - 5 * progress + 45) + progress * 115));
-        double advancedSin = Math.sin(Math.toRadians(from + length + 5 - 5 * progress - progress * barWidth));
-        double advancedCos = Math.cos(Math.toRadians(from + length + 5 - 5 * progress - progress * barWidth));
+        double rotateSin = Math.sin(Math.toRadians(fromDegree + lengthDegree + 5 - 5 * progress + 45 + progress * 115));
+        double rotateSinMinus = Math.sin(Math.toRadians(fromDegree + lengthDegree - (5 - 5 * progress + 45) + progress * 115));
+        double advancedSin = Math.sin(Math.toRadians(fromDegree + lengthDegree + 5 - 5 * progress - progress * barWidth));
+        double advancedCos = Math.cos(Math.toRadians(fromDegree + lengthDegree + 5 - 5 * progress - progress * barWidth));
 
         int outX = (int) (rotateSin * arrowLength);
         int outY = (int) ((rotateSinMinus * arrowLength));
@@ -409,11 +409,11 @@ public class ProgressWheel extends View {
         canvas.drawLine(outBaseX, outBaseY, outBaseX + outX, outBaseY + outY, paint);
     }
 
-    private void drawArrow(Canvas canvas, float from, float length) {
+    private void drawArrow(Canvas canvas, float fromDegree, float lengthDegree) {
         int i = (int) (barWidth * 2 * (1 - (barMaxLength - barExtraLength) / barMaxLength));
 
-        double sin = Math.sin(Math.toRadians(from + length));
-        double cos = Math.cos(Math.toRadians(from + length));
+        double sin = Math.sin(Math.toRadians(fromDegree + lengthDegree));
+        double cos = Math.cos(Math.toRadians(fromDegree + lengthDegree));
 
         float circleRadius = circleBounds.width() / 2;
         int x = (int) (cos * circleRadius + circleBounds.centerX());
