@@ -410,7 +410,7 @@ public class ProgressWheel extends View {
     }
 
     private void drawArrow(Canvas canvas, float fromDegree, float lengthDegree) {
-        int i = (int) (barWidth * 2 * (1 - (barMaxLength - barExtraLength) / barMaxLength));
+        int arrowSize = (int) (barWidth * 2 * (1 - (barMaxLength - barExtraLength) / barMaxLength));
 
         double sin = Math.sin(Math.toRadians(fromDegree + lengthDegree));
         double cos = Math.cos(Math.toRadians(fromDegree + lengthDegree));
@@ -419,13 +419,13 @@ public class ProgressWheel extends View {
         int x = (int) (cos * circleRadius + circleBounds.centerX());
         int y = (int) (sin * circleRadius + circleBounds.centerY());
 
-        int aX = (int) (cos * (circleRadius - barWidth - i) + circleBounds.centerX());
-        int aY = (int) (sin * (circleRadius - barWidth - i) + circleBounds.centerY());
-        int bX = (int) (cos * (circleRadius + barWidth + i) + circleBounds.centerX());
-        int bY = (int) (sin * (circleRadius + barWidth + i) + circleBounds.centerY());
+        int aX = (int) (cos * (circleRadius - barWidth - arrowSize) + circleBounds.centerX());
+        int aY = (int) (sin * (circleRadius - barWidth - arrowSize) + circleBounds.centerY());
+        int bX = (int) (cos * (circleRadius + barWidth + arrowSize) + circleBounds.centerX());
+        int bY = (int) (sin * (circleRadius + barWidth + arrowSize) + circleBounds.centerY());
 
-        int cX = (int) (-sin * i * 2);
-        int cY = (int) (cos * i * 2);
+        int cX = (int) (-sin * arrowSize * 2);
+        int cY = (int) (cos * arrowSize * 2);
 
         arrowPath.rewind();
         arrowPath.setFillType(Path.FillType.EVEN_ODD);
