@@ -28,7 +28,6 @@ import android.view.View;
  *         http://www.apache.org/licenses/LICENSE-2.0
  */
 public class ProgressWheel extends View {
-    public static final int MAX_LINE_ARROW_LENGTH = 50;
     private static final String TAG = ProgressWheel.class.getSimpleName();
     private final int barLength = 16;
     private final int barMaxLength = 270;
@@ -330,13 +329,13 @@ public class ProgressWheel extends View {
 
         canvas.drawArc(circleBounds, from, length, false, barPaint);
 
-        if(barGrowingFromFront && isPostFinishingArrow) {
+        if (barGrowingFromFront && isPostFinishingArrow) {
             isFinishingArrow = true;
             isPostFinishingArrow = false;
         }
 
         boolean isLastDrawArrow = false;
-        if (barGrowingFromFront){
+        if (barGrowingFromFront) {
             isStartingArrow = false;
         }
         if (isFinishingArrow && !barGrowingFromFront) {
@@ -374,9 +373,11 @@ public class ProgressWheel extends View {
         double sin_45 = Math.sin(Math.toRadians(fromDegree + lengthDegree + 45 - 5 * progress));
         double sin_minus_45 = Math.sin(Math.toRadians(fromDegree + lengthDegree - (45 - 5 * progress)));
 
-        float arrowLength = MAX_LINE_ARROW_LENGTH * (1 - progress);
-        int inX = (int) ((sin_minus_45 * MAX_LINE_ARROW_LENGTH) * (1 - progress) + (sin * arrowLength) * progress);
-        int inY = (int) ((-sin_45 * MAX_LINE_ARROW_LENGTH) * (1 - progress) + ((-cos * arrowLength) * progress));
+        // FIXME use xml attribute
+        int maxArrowLineLength = barWidth * 5;
+        float arrowLength = maxArrowLineLength * (1 - progress);
+        int inX = (int) ((sin_minus_45 * maxArrowLineLength) * (1 - progress) + (sin * arrowLength) * progress);
+        int inY = (int) ((-sin_45 * maxArrowLineLength) * (1 - progress) + ((-cos * arrowLength) * progress));
 
         float circleRadius = circleBounds.width() / 2;
 
@@ -392,12 +393,12 @@ public class ProgressWheel extends View {
         int outY = (int) ((rotateSinMinus * arrowLength));
         int outBaseX;
         int outBaseY;
-        if (progress<0.5f) {
-            outBaseX = (int) (advancedCos * (circleRadius + MAX_LINE_ARROW_LENGTH * progress - barWidth / 4) + circleBounds.centerX());
-            outBaseY = (int) (advancedSin * (circleRadius + MAX_LINE_ARROW_LENGTH * progress - barWidth / 4) + circleBounds.centerY());
-        }else {
-            outBaseX = (int) (advancedCos * (circleRadius + MAX_LINE_ARROW_LENGTH * (1 - progress) - barWidth / 4) + circleBounds.centerX());
-            outBaseY = (int) (advancedSin * (circleRadius + MAX_LINE_ARROW_LENGTH * (1 - progress) - barWidth / 4) + circleBounds.centerY());
+        if (progress < 0.5f) {
+            outBaseX = (int) (advancedCos * (circleRadius + maxArrowLineLength * progress - barWidth / 4) + circleBounds.centerX());
+            outBaseY = (int) (advancedSin * (circleRadius + maxArrowLineLength * progress - barWidth / 4) + circleBounds.centerY());
+        } else {
+            outBaseX = (int) (advancedCos * (circleRadius + maxArrowLineLength * (1 - progress) - barWidth / 4) + circleBounds.centerX());
+            outBaseY = (int) (advancedSin * (circleRadius + maxArrowLineLength * (1 - progress) - barWidth / 4) + circleBounds.centerY());
         }
 
         arrowPaint.setAntiAlias(true);
