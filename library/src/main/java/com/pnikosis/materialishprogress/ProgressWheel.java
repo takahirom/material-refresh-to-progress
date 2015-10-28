@@ -68,6 +68,8 @@ public class ProgressWheel extends View {
     private ProgressCallback callback;
     private boolean shouldAnimate;
 
+    // FIXME use xml attribute
+    private int maxArrowLineLength;
     private boolean isStartingArrow = true;
     private boolean isFinishingArrow = false;
     private Paint arrowPaint;
@@ -239,6 +241,7 @@ public class ProgressWheel extends View {
         fillRadius = a.getBoolean(R.styleable.ProgressWheel_matProg_fillRadius, false);
 
         barWidth = (int) a.getDimension(R.styleable.ProgressWheel_matProg_barWidth, barWidth);
+        maxArrowLineLength = barWidth * 5;
 
         rimWidth = (int) a.getDimension(R.styleable.ProgressWheel_matProg_rimWidth, rimWidth);
 
@@ -373,8 +376,7 @@ public class ProgressWheel extends View {
         double sin_45 = Math.sin(Math.toRadians(fromDegree + lengthDegree + 45 - 5 * progress));
         double sin_minus_45 = Math.sin(Math.toRadians(fromDegree + lengthDegree - (45 - 5 * progress)));
 
-        // FIXME use xml attribute
-        int maxArrowLineLength = barWidth * 5;
+
         float arrowLength = maxArrowLineLength * (1 - progress);
         int inX = (int) ((sin_minus_45 * maxArrowLineLength) * (1 - progress) + (sin * arrowLength) * progress);
         int inY = (int) ((-sin_45 * maxArrowLineLength) * (1 - progress) + ((-cos * arrowLength) * progress));
