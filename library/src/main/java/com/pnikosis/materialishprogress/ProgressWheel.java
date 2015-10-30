@@ -67,6 +67,7 @@ public class ProgressWheel extends View {
     private boolean isSpinning = false;
     private ProgressCallback callback;
     private boolean shouldAnimate;
+    private boolean isLineArrow = false;
 
     // FIXME use xml attribute
     private int maxArrowLineLength;
@@ -74,7 +75,6 @@ public class ProgressWheel extends View {
     private boolean isFinishingArrow = false;
     private Paint arrowPaint;
     private boolean isPostFinishingArrow = false;
-    private boolean isLineArrow = false;
     private Path arrowPath = new Path();
 
     /**
@@ -86,6 +86,7 @@ public class ProgressWheel extends View {
         parseAttributes(context.obtainStyledAttributes(attrs, R.styleable.ProgressWheel));
 
         setAnimationEnabled();
+
     }
 
     /**
