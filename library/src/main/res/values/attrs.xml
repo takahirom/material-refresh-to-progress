@@ -13,6 +13,7 @@
         <attr name="matProg_barWidth" format="dimension" />
         <attr name="matProg_linearProgress" format="boolean" />
         <attr name="matProg_lineArrow" format="boolean" />
+        <attr name="matProg_arrowLineLength" format="dimension" />
     </declare-styleable>
 
 </resources>

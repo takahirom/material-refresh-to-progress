@@ -70,7 +70,7 @@ public class ProgressWheel extends View {
     private boolean isLineArrow = false;
 
     // FIXME use xml attribute
-    private int maxArrowLineLength;
+    private int maxArrowLineLength = 15;
     private boolean isStartingArrow = true;
     private boolean isFinishingArrow = false;
     private Paint arrowPaint;
@@ -242,7 +242,7 @@ public class ProgressWheel extends View {
         fillRadius = a.getBoolean(R.styleable.ProgressWheel_matProg_fillRadius, false);
 
         barWidth = (int) a.getDimension(R.styleable.ProgressWheel_matProg_barWidth, barWidth);
-        maxArrowLineLength = barWidth * 5;
+        maxArrowLineLength = (int) a.getDimension(R.styleable.ProgressWheel_matProg_arrowLineLength, maxArrowLineLength);
 
         rimWidth = (int) a.getDimension(R.styleable.ProgressWheel_matProg_rimWidth, rimWidth);
 
