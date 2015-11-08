@@ -68,9 +68,9 @@ public class ProgressWheel extends View {
     private ProgressCallback callback;
     private boolean shouldAnimate;
     private boolean isLineArrow = false;
+    private int maxArrowLineLength = 15;
 
     // FIXME use xml attribute
-    private int maxArrowLineLength = 15;
     private boolean isStartingArrow = true;
     private boolean isFinishingArrow = false;
     private Paint arrowPaint;
