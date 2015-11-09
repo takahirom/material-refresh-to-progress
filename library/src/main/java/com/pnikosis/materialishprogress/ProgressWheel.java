@@ -404,14 +404,10 @@ public class ProgressWheel extends View {
             outBaseY = (int) (advancedSin * (circleRadius + maxArrowLineLength * (1 - progress) - barWidth / 4) + circleBounds.centerY());
         }
 
-        arrowPaint.setAntiAlias(true);
         arrowPaint.setStyle(Style.STROKE);
         arrowPaint.setStrokeWidth(barWidth);
-        Paint paint = new Paint(arrowPaint);
-//        paint.setColor(Color.YELLOW);
-        canvas.drawLine(inBaseX, inBaseY, inBaseX + inX, inBaseY + inY, paint);
-//        paint.setColor(Color.RED);
-        canvas.drawLine(outBaseX, outBaseY, outBaseX + outX, outBaseY + outY, paint);
+        canvas.drawLine(inBaseX, inBaseY, inBaseX + inX, inBaseY + inY, arrowPaint);
+        canvas.drawLine(outBaseX, outBaseY, outBaseX + outX, outBaseY + outY, arrowPaint);
     }
 
     private void drawArrow(Canvas canvas, float fromDegree, float lengthDegree) {
